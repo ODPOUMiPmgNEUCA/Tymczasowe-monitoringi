@@ -1,0 +1,9 @@
+numpy
+pandas
+plotly
+streamlit
+openpyxl
+protobuf
+XlsxWriter
+altair
+datetime
