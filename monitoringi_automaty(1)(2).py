@@ -637,12 +637,12 @@ if sekcja == 'Zgaginstop':
         
         # Sprawdzamy, które arkusze są dostępne i wczytujemy odpowiednie dane
         if 'Rabat Zgaginstop 24' in xls.sheet_names:
-            Lr = pd.read_excel(df, sheet_name='Rabat Zgaginstop 24', skiprows=14, usecols=[1, 3, 9])
+            Lr = pd.read_excel(df, sheet_name='Rabat Zgaginstop 24', skiprows=13, usecols=[1, 3, 9])
             st.write("Dane z arkusza Rabat Zgaginstop 24:")
             st.write(Lr.head())
 
         if 'Rabat Zgaginstop 48' in xls.sheet_names:
-            Lra = pd.read_excel(df, sheet_name='Rabat Zgaginstop 48', skiprows=14, usecols=[1, 3, 9])
+            Lra = pd.read_excel(df, sheet_name='Rabat Zgaginstop 48', skiprows=13, usecols=[1, 3, 9])
             st.write("Dane z arkusza Rabat Zgaginstop 48:")
             st.write(Lra.head())
 
