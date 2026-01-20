@@ -426,6 +426,9 @@ if sekcja == 'Ketoprofen':
         Lg
         Lg = Lg[Lg["pakiet"].isin(["50+17", "100+40"])]
         Lg
+        Lg["pakiet"] = "5+2"
+        Lg
+
 
         #Lg
 
