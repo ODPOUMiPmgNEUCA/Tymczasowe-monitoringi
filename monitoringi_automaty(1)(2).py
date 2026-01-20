@@ -406,6 +406,7 @@ if sekcja == 'Ketoprofen':
 
         Lg = Lg[~Lg['Pakiet'].str.lower().str.contains('brak')]
 
+        Lr = Lr.dropna(subset=['Klient'])
         # klient na całkowite
         Lr['Klient'] = Lr['Klient'].astype(int)
         Lg['Klient'] = Lg['Klient'].astype(int)
