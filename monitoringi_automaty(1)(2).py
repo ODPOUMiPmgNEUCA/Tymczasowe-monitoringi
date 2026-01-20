@@ -424,6 +424,9 @@ if sekcja == 'Ketoprofen':
 
         Lg['pakiet'] = Lg['Pakiet'].apply(extract_numbers_as_text)
         Lg
+        Lg = Lg[Lg["pakiet"].isin(["50+17", "100+40"])]
+        Lg
+
         #Lg
 
         # na zmiennoprzecinkowe
