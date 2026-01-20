@@ -518,10 +518,10 @@ if sekcja == 'Ketoprofen':
         with pd.ExcelWriter(excel_file, engine='xlsxwriter') as writer:
         # Jeśli dane BRAZOFLAMIN istnieją, zapisz je w odpowiednim arkuszu
             if 'ostatecznie_lr' in locals():
-                ostatecznie_lr.to_excel(writer, index=False, sheet_name='Promocje_rabat')
+                ostatecznie_lr.to_excel(writer, index=False, sheet_name='Rabat')
 
             if 'ostatecznie_lg' in locals():
-                ostatecznie_lg.to_excel(writer, index=False, sheet_name='Promocje_gratis')
+                ostatecznie_lg.to_excel(writer, index=False, sheet_name='Gratis')
 
         excel_file.seek(0)  # Resetowanie wskaźnika do początku pliku
 
@@ -542,12 +542,12 @@ if sekcja == 'Ketoprofen':
             xls = pd.ExcelFile(poprzedni)  # Pobranie pliku z arkuszami
     
         # Wczytanie danych z odpowiednich arkuszy
-        if 'Promocje_rabat' in xls.sheet_names:
+        if 'Rabat' in xls.sheet_names:
             poprzedni_lr = pd.read_excel(poprzedni, sheet_name='Rabat')
             st.write('Poprzedni monitoring - Rabat:')
             st.write(poprzedni_lr.head())
 
-        if 'Promocje_gratis' in xls.sheet_names:
+        if 'Gratis' in xls.sheet_names:
             poprzedni_lg = pd.read_excel(poprzedni, sheet_name='Gratis')
             st.write('Poprzedni monitoring - Gratis :')
             st.write(poprzedni_lg.head())
