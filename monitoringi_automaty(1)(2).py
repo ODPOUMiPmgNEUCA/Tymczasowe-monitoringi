@@ -423,6 +423,7 @@ if sekcja == 'Ketoprofen':
         Lr['Pakiet'] = Lr['Pakiet'].apply(extract_percentage)
 
         Lg['pakiet'] = Lg['Pakiet'].apply(extract_numbers_as_text)
+        Lg
         #Lg
 
         # na zmiennoprzecinkowe
