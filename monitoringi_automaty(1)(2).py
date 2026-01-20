@@ -420,7 +420,7 @@ if sekcja == 'Ketoprofen':
         Lr['SIECIOWY'] = Lr.apply(lambda row: 'SIECIOWY' if 'powiązanie' in str(row['Pakiet']).lower() else '', axis=1)
         Lg['SIECIOWY'] = Lg.apply(lambda row: 'SIECIOWY' if 'powiązanie' in str(row['Pakiet']).lower() else '', axis=1)
 
-        Lr['rabat_percent'] = Lr['Pakiet'].apply(extract_percentage)
+        Lr['Pakiet'] = Lr['Pakiet'].apply(extract_percentage)
 
         Lg['pakiet'] = Lg['Pakiet'].apply(extract_numbers_as_text)
         #Lg
