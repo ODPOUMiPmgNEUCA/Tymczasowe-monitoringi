@@ -567,7 +567,7 @@ if sekcja == 'Ketoprofen':
             # Usuń duplikaty na podstawie kluczowych kolumn (zachowując pierwsze wystąpienie)
             result_lg = result_lg.drop_duplicates(subset=['Kod SAP', 'pakiet'], keep='first')
             # Oznacz nowe wiersze (takie, które nie były w poprzedni_lg)
-            result_lg['Czy dodać'] = result_lg.apply(lambda row: 'DODAJ' if row['Kod klienta'] not in poprzedni_lg['Kod klienta'].values 
+            result_lg['Czy dodać'] = result_lg.apply(lambda row: 'DODAJ' if row['Kod SAP'] not in poprzedni_lg['Kod SAP'].values 
                                                      or row['pakiet'] not in poprzedni_lg['pakiet'].values else '', axis=1)
 
 
