@@ -972,7 +972,7 @@ if sekcja == 'Zgaginstop':
         result_lg = result_lg.drop(columns=['Czy dodać'])
         result_lra = result_lra.drop(columns=['old_percent', 'Czy dodać'])
         result_lgr = result_lgr.drop(columns=['Czy dodać'])
-        result_OST = result_OST.drop(columns=['Czy dodać']
+        result_OST = result_OST.drop(columns=['Czy dodać'])
         # result_lg = result_lg.drop(columns=['old_pakiet', 'Czy dodać'])
 
         st.write('Kliknij, aby pobrać plik z formułą max do następnego monitoringu')
