@@ -1,9 +1,8 @@
 numpy
 pandas
 plotly
-streamlit
+streamlit>=1.31.0
 openpyxl
 protobuf
 XlsxWriter
-altair
-datetime
+altair==4.2.2
