@@ -1119,9 +1119,6 @@ if sekcja == 'Oferta sezonowa':
 
         pow_lg
 
-
-
-        
         
         #TERAZ IMS
         ims = st.file_uploader(
@@ -1223,57 +1220,90 @@ if sekcja == 'Oferta sezonowa':
         )
     
         # Plik z poprzedniego monitoringu
-        poprzedni = st.file_uploader(
-            label="Wrzuć plik z poprzedniego monitoringu"
-        )
-    
         if poprzedni:
-            xls = pd.ExcelFile(poprzedni)  # Pobranie pliku z arkuszami
-    
-        # Wczytanie danych z odpowiednich arkuszy
+            xls = pd.ExcelFile(poprzedni)
+        
+        # Rabat – bez zmian
         if 'Rabat' in xls.sheet_names:
             poprzedni_lr = pd.read_excel(poprzedni, sheet_name='Rabat')
             st.write('Poprzedni monitoring - Rabat:')
             st.write(poprzedni_lr.head())
+        
+        # Gratis – 4 grupy
+        poprzedni_gratis = {}
+        
+        for nazwa in ['pierwszy', 'drugi', 'trzeci', 'czwarty']:
+            if nazwa in xls.sheet_names:
+                poprzedni_gratis[nazwa] = pd.read_excel(poprzedni, sheet_name=nazwa)
+                st.write(f'Poprzedni monitoring - {nazwa}:')
+                st.write(poprzedni_gratis[nazwa].head())
 
-        if 'Gratis' in xls.sheet_names:
-            poprzedni_lg = pd.read_excel(poprzedni, sheet_name='Gratis')
-            st.write('Poprzedni monitoring - Gratis :')
-            st.write(poprzedni_lg.head())
 
-        # Przetwarzanie 
         if 'ostatecznie_lr' in locals() and 'poprzedni_lr' in locals():
             poprzedni_lr = poprzedni_lr.rename(columns={'max_percent': 'old_percent'})
-            result_lr = ostatecznie_lr.merge(poprzedni_lr[['Kod SAP', 'old_percent']], on='Kod SAP', how='left')
+            result_lr = ostatecznie_lr.merge(
+                poprzedni_lr[['Kod SAP', 'old_percent']],
+                on='Kod SAP',
+                how='left'
+            )
             result_lr['old_percent'] = result_lr['old_percent'].fillna(0)
-            result_lr['Czy dodać'] = result_lr.apply(lambda row: 'DODAJ' if row['max_percent'] > row['old_percent'] else '', axis=1)
+            result_lr['Czy dodać'] = result_lr.apply(
+                lambda row: 'DODAJ' if row['max_percent'] > row['old_percent'] else '',
+                axis=1
+            )
 
-        if 'ostatecznie_lg' in locals() and 'poprzedni_lg' in locals():
-            # Zmień nazwę kolumny 'pakiet' na 'old_pakiet' w poprzedni_lg
-            # poprzedni_lg = poprzedni_lg.rename(columns={'pakiet': 'old_pakiet'})
-            # Dodaj poprzedni_lg na dole ostatecznie_lg
-            result_lg = pd.concat([ostatecznie_lg, poprzedni_lg], ignore_index=True)
-            # Usuń duplikaty na podstawie kluczowych kolumn (zachowując pierwsze wystąpienie)
-            result_lg = result_lg.drop_duplicates(subset=['Kod SAP', 'pakiet'], keep='first')
-            # Oznacz nowe wiersze (takie, które nie były w poprzedni_lg)
-            result_lg['Czy dodać'] = result_lg.apply(lambda row: 'DODAJ' if row['Kod SAP'] not in poprzedni_lg['Kod SAP'].values 
-                                                     or row['pakiet'] not in poprzedni_lg['pakiet'].values else '', axis=1)
+        wyniki_gratis = {}
+        
+        mapa_grup = {
+            'pierwszy': pierwszy,
+            'drugi': drugi,
+            'trzeci': trzeci,
+            'czwarty': czwarty,
+        }
+
+        
+        for nazwa, df_aktualny in mapa_grup.items():
+        
+            df_poprzedni = poprzedni_gratis.get(nazwa)
+        
+            if df_poprzedni is not None:
+                result = pd.concat([df_aktualny, df_poprzedni], ignore_index=True)
+        
+                result = result.drop_duplicates(
+                    subset=['Kod SAP', 'pakiet'],
+                    keep='first'
+                )
+        
+                result['Czy dodać'] = result.apply(
+                    lambda row: 'DODAJ'
+                    if not (
+                        (row['Kod SAP'] in df_poprzedni['Kod SAP'].values)
+                        and (row['pakiet'] in df_poprzedni['pakiet'].values)
+                    )
+                    else '',
+                    axis=1
+                )
+            else:
+                result = df_aktualny.copy()
+                result['Czy dodać'] = 'DODAJ'
+        
+            wyniki_gratis[nazwa] = result
 
 
-        # Zapisywanie plików do Excela
         excel_file1 = io.BytesIO()
+        
         with pd.ExcelWriter(excel_file1, engine='xlsxwriter') as writer:
+        
             if 'result_lr' in locals():
                 result_lr.to_excel(writer, index=False, sheet_name='Rabat')
-
-            if 'result_lg' in locals():
-                result_lg.to_excel(writer, index=False, sheet_name='Gratis')
-
+        
+            for nazwa, df in wyniki_gratis.items():
+                df.to_excel(writer, index=False, sheet_name=nazwa)
 
         excel_file1.seek(0)  # Resetowanie wskaźnika do początku pliku
 
         # Definiowanie nazwy pliku
-        nazwa_pliku = f"KETOPROFEN_{dzisiejsza_data}.xlsx"
+        nazwa_pliku = f"OFERTA_SEZONOWA_{dzisiejsza_data}.xlsx"
         # Umożliwienie pobrania pliku Excel
         st.download_button(
             label='Kliknij aby pobrać plik z kodami, które kody należy dodać',
@@ -1282,28 +1312,43 @@ if sekcja == 'Oferta sezonowa':
             mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
 
-        result_lr = result_lr.drop(columns=['old_percent', 'Czy dodać'])
-        result_lg = result_lg.drop(columns=['Czy dodać'])
-        # result_lg = result_lg.drop(columns=['old_pakiet', 'Czy dodać'])
+
+
+####################################### TU SKONCZYŁAM
+
+
+
+
+        # Rabat – bez zmian
+        result_lr = result_lr.drop(columns=['old_percent', 'Czy dodać'], errors='ignore')
+        
+        # Gratis – każda grupa osobno
+        for nazwa in wyniki_gratis:
+            wyniki_gratis[nazwa] = wyniki_gratis[nazwa].drop(
+                columns=['Czy dodać'],
+                errors='ignore'
+            )
+
 
         st.write('Kliknij, aby pobrać plik z formułą max do następnego monitoringu')
 
-        # Tworzenie pliku Excel w pamięci
+
         excel_file2 = io.BytesIO()
-    
-        # Zapis do pliku Excel w pamięci
+
         with pd.ExcelWriter(excel_file2, engine='xlsxwriter') as writer:
+        
+            # Rabat
             result_lr.to_excel(writer, index=False, sheet_name='Rabat')
-            result_lg.to_excel(writer, index=False, sheet_name='Gratis')
+        
+            # Gratis – 4 arkusze
+            for nazwa, df in wyniki_gratis.items():
+                df.to_excel(writer, index=False, sheet_name=nazwa)
 
 
-        # Resetowanie wskaźnika do początku pliku
-        excel_file2.seek(0) 
-    
-        # Definiowanie nazwy pliku
-        nazwa_pliku = f"FM_KETOPROFEN_{dzisiejsza_data}.xlsx"
-    
-        # Umożliwienie pobrania pliku Excel
+        excel_file2.seek(0)
+        
+        nazwa_pliku = f"FM_OFERTA_SEZONOWA_{dzisiejsza_data}.xlsx"
+        
         st.download_button(
             label='Pobierz nowy plik FORMUŁA MAX',
             data=excel_file2,
