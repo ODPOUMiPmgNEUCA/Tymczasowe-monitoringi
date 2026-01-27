@@ -1218,6 +1218,9 @@ if sekcja == 'Oferta sezonowa':
             file_name='czy_dodac.xlsx',
             mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
+
+        # Plik z poprzedniego monitoringu 
+        poprzedni = st.file_uploader(label="Wrzuć plik z poprzedniego monitoringu")
     
         # Plik z poprzedniego monitoringu
         if poprzedni:
