@@ -1273,7 +1273,7 @@ if sekcja == 'Oferta sezonowa':
                 result = pd.concat([df_aktualny, df_poprzedni], ignore_index=True)
         
                 result = result.drop_duplicates(
-                    subset=['Kod SAP', 'pakiet'],
+                    subset=['Kod SAP', 'Indeks','Nielogiczne'],
                     keep='first'
                 )
         
@@ -1281,7 +1281,7 @@ if sekcja == 'Oferta sezonowa':
                     lambda row: 'DODAJ'
                     if not (
                         (row['Kod SAP'] in df_poprzedni['Kod SAP'].values)
-                        and (row['pakiet'] in df_poprzedni['pakiet'].values)
+                        and (row['Nielogiczne'] in df_poprzedni['Nielogiczne'].values)
                     )
                     else '',
                     axis=1
