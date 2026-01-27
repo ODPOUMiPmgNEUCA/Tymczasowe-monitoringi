@@ -1080,7 +1080,7 @@ if sekcja == 'Oferta sezonowa':
         pow_lr = Lr1
 
         pow_lg = Lg1
-        pow_lg['Logiczne'] = pow_lg['Indeks'].astype(str) + '_' + pow_lg['Pakiet'].astype(str)
+        pow_lg['Logiczne'] = pow_lg['Indeks'].astype(str) + '_' + pow_lg['pakiet'].astype(str)
 
 
         mapa_nielogiczne = {
