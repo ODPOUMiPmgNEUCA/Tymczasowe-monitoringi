@@ -1136,18 +1136,19 @@ if sekcja == 'Oferta sezonowa':
         ims = ims[ims['APD_Rodzaj_farmaceutyczny'].isin(['AP - Apteka','ME - Sklep zielarsko - medyczny','PU - Punkt apteczny'])]
     
         wynik_df_lr = pd.merge(pow_lr, ims, left_on='Klient', right_on='Klient', how='left')
+        
         wynik_df_lg = pd.merge(pow_lg, ims, left_on='Klient', right_on='Klient', how='left')
     
         # Wybór potrzebnych kolumn: 'APD_kod_SAP_apteki' i 'max_percent'
         wynik_df_lr = wynik_df_lr[['Klient','APD_kod_SAP_apteki', 'max_percent']]
-        wynik_df_lg = wynik_df_lg[['Klient','APD_kod_SAP_apteki', 'pakiet']]
+        wynik_df_lg = wynik_df_lg[['Klient','APD_kod_SAP_apteki', 'Indeks', 'Nielogiczne']]
     
         #to są kody SAP
         wynik_df1_lr = wynik_df_lr.rename(columns={'APD_kod_SAP_apteki': 'Kod SAP'})
         wynik_df1_lr = wynik_df1_lr[['Kod SAP','max_percent']]
 
         wynik_df1_lg = wynik_df_lg.rename(columns={'APD_kod_SAP_apteki': 'Kod SAP'})
-        wynik_df1_lg = wynik_df1_lg[['Kod SAP','pakiet']]
+        wynik_df1_lg = wynik_df1_lg[['Kod SAP','Indeks','Nielogiczne']]
 
         #wynik_df1
     
@@ -1156,14 +1157,14 @@ if sekcja == 'Oferta sezonowa':
         wynik_df2_lr = wynik_df2_lr[['Kod SAP','max_percent']]
 
         wynik_df2_lg = wynik_df_lg.rename(columns={'Klient': 'Kod SAP'})
-        wynik_df2_lg = wynik_df2_lg[['Kod SAP','pakiet']]
+        wynik_df2_lg = wynik_df2_lg[['Kod SAP','Indeks','Nielogiczne']]
 
         #wynik_df2
 
         #POŁĄCZYĆ wynik_df z standard_ost
         polaczone_lr = pd.concat([stand_lr, wynik_df1_lr, wynik_df2_lr], axis = 0)
 
-        polaczone_lg = pd.concat([stand_lg, wynik_df1_lg, wynik_df2_lg], axis = 0)
+        polaczone_lg = pd.concat([wynik_df1_lg, wynik_df2_lg], axis = 0)
   
         posortowane_lr = polaczone_lr.sort_values(by='max_percent', ascending=False)
 
@@ -1171,7 +1172,7 @@ if sekcja == 'Oferta sezonowa':
         ostatecznie_lr = ostatecznie_lr[ostatecznie_lr['max_percent'] != 0]
 
 
-        ostatecznie_lg = polaczone_lg.drop_duplicates(subset=['Kod SAP', 'pakiet'])
+        ostatecznie_lg = polaczone_lg.drop_duplicates(subset=['Kod SAP', 'Indeks', 'Nielogiczne'])
 
         # ostatecznie_lg
         
