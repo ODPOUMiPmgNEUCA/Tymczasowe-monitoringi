@@ -1018,7 +1018,7 @@ if sekcja == 'Oferta sezonowa':
         
         # Sprawdzamy, które arkusze są dostępne i wczytujemy odpowiednie dane
         if 'Rabat' in xls.sheet_names:
-            Lr = pd.read_excel(df, sheet_name='Rabat', skiprows=13, usecols=[1, 3, 8])
+            Lr = pd.read_excel(df, sheet_name='Rabat', skiprows=13, usecols=[1, 3, 9])
             st.write("Dane z arkusza Rabat:")
             st.write(Lr.head())
 
