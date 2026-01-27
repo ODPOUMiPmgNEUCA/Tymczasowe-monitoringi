@@ -1080,6 +1080,7 @@ if sekcja == 'Oferta sezonowa':
         pow_lr = Lr1
 
         pow_lg = Lg1
+        pow_lg
         
         #TERAZ IMS
         ims = st.file_uploader(
