@@ -1080,25 +1080,48 @@ if sekcja == 'Oferta sezonowa':
         pow_lr = Lr1
 
         pow_lg = Lg1
+        pow_lg['Logiczne'] = pow_lg['Indeks'].astype(str) + '_' + pow_lg['Pakiet'].astype(str)
+
+
+        mapa_nielogiczne = {
+        '117226_80+30': '117226_3+2',
+        '117790_80+30': '117790_10+6',
+        '99954_50+20': '99954_5+2',
+        '79580_40+15': '79580_3+1',
+        '99938_40+15': '99938_2+1',
+        '120002_50+15': '120002_4+2',
+        '97047_150+75': '97047_5+2',
+        '97048_100+30': '97048_10+3',
+        '97049_50+15': '97049_10+3',
+        '97050_100+30': '97050_15+8',
+        '97051_100+30': '97051_10+3',
+        '97052_50+15': '97052_5+2',
+        '112551_50+20': '112551_5+2',
+        '112550_50+20': '112550_5+2',
+        '114535_30+10': '114535_3+1',
+        '97072_100+40': '97072_10+4',
+        '97073_100+40': '97073_10+4',
+        '116878_100+40': '116878_5+2',
+        '116929_50+20': '116929_4+2',
+        '70034_30+15': '70034_4+2',
+        '65805_40+15': '65805_5+2',
+        '110155_40+15': '110155_5+2',
+        '97042_300+160': '97042_8+3',
+        '97044_200+110': '97044_8+3',
+        '97045_100+55': '97045_10+3',
+        '74004_30+15': '74004_5+2',
+        '121724_50+20': '121724_10+4',
+        '122696_50+20': '122696_10+4',
+        }
+        
+        pow_lg['Nielogiczne'] = pow_lg['Logiczne'].map(mapa_nielogiczne)
+
+
         pow_lg
 
-        ###################################TYMCZASOWO
-        excel_file = io.BytesIO()
 
-        with pd.ExcelWriter(excel_file, engine='xlsxwriter') as writer:
-        # Jeśli dane BRAZOFLAMIN istnieją, zapisz je w odpowiednim arkuszu
-            if 'pow_lg' in locals():
-                pow_lg.to_excel(writer, index=False, sheet_name='pow_lg')
 
-                 # Umożliwienie pobrania pliku Excel
-        st.download_button(
-            label='Pobierz ten szit',
-            data=excel_file,
-            file_name='szit.xlsx',
-            mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        )
-
-        ####################################333333
+        
         
         #TERAZ IMS
         ims = st.file_uploader(
