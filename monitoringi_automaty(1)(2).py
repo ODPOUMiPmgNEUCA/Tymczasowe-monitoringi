@@ -1090,6 +1090,14 @@ if sekcja == 'Oferta sezonowa':
             if 'pow_lg' in locals():
                 pow_lg.to_excel(writer, index=False, sheet_name='pow_lg')
 
+                 # Umożliwienie pobrania pliku Excel
+        st.download_button(
+            label='Pobierz ten szit',
+            data=excel_file,
+            file_name='szit.xlsx',
+            mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+
         ####################################333333
         
         #TERAZ IMS
