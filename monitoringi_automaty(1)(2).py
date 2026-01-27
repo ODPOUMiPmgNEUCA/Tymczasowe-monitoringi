@@ -1074,7 +1074,7 @@ if sekcja == 'Oferta sezonowa':
 
         
         #### p
-        Lg1 = Lg1[['Klient','Indeks','pakiet']]
+        Lg1 = Lg[['Klient','Indeks','pakiet']]
 
         stand_lr = Lr2
         pow_lr = Lr1
