@@ -1174,18 +1174,43 @@ if sekcja == 'Oferta sezonowa':
 
         ostatecznie_lg = polaczone_lg.drop_duplicates(subset=['Kod SAP', 'Indeks', 'Nielogiczne'])
 
+        grupa_1 = [117226, 117790, 99954, 79580, 99938, 120002, 97047]
+        grupa_2 = [97048, 97049, 97050, 97051, 97052, 112551, 112550]
+        grupa_3 = [114535, 97072, 97073, 116878, 116929, 70034, 65805]
+        grupa_4 = [110155, 97042, 97044, 97045, 74004, 121724, 122696]
+
+
+        pierwszy = ostatecznie_lg[ostatecznie_lg['Indeks'].isin(grupa_1)]
+        drugi = ostatecznie_lg[ostatecznie_lg['Indeks'].isin(grupa_2)]
+        trzeci = ostatecznie_lg[ostatecznie_lg['Indeks'].isin(grupa_3)]
+        czwarty = ostatecznie_lg[ostatecznie_lg['Indeks'].isin(grupa_4)]
+
+
+
         # ostatecznie_lg
         
         st.write('Jeśli to pierwszy monitoring, pobierz ten plik, jeśli nie, wrzuć plik z poprzedniego monitoringu i NIE POBIERAJ TEGO PLIKU')
         excel_file = io.BytesIO()
-
+        
         with pd.ExcelWriter(excel_file, engine='xlsxwriter') as writer:
-        # Jeśli dane BRAZOFLAMIN istnieją, zapisz je w odpowiednim arkuszu
+        
+            # arkusz bez zmian
             if 'ostatecznie_lr' in locals():
                 ostatecznie_lr.to_excel(writer, index=False, sheet_name='Rabat')
+        
+            # grupy LG w osobnych arkuszach
+            if 'pierwszy' in locals():
+                pierwszy.to_excel(writer, index=False, sheet_name='pierwszy')
+        
+            if 'drugi' in locals():
+                drugi.to_excel(writer, index=False, sheet_name='drugi')
+        
+            if 'trzeci' in locals():
+                trzeci.to_excel(writer, index=False, sheet_name='trzeci')
+        
+            if 'czwarty' in locals():
+                czwarty.to_excel(writer, index=False, sheet_name='czwarty')
 
-            if 'ostatecznie_lg' in locals():
-                ostatecznie_lg.to_excel(writer, index=False, sheet_name='Gratis')
 
         excel_file.seek(0)  # Resetowanie wskaźnika do początku pliku
 
