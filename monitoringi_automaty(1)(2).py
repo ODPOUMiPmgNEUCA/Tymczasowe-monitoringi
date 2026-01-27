@@ -1081,6 +1081,16 @@ if sekcja == 'Oferta sezonowa':
 
         pow_lg = Lg1
         pow_lg
+
+        ###################################TYMCZASOWO
+        excel_file = io.BytesIO()
+
+        with pd.ExcelWriter(excel_file, engine='xlsxwriter') as writer:
+        # Jeśli dane BRAZOFLAMIN istnieją, zapisz je w odpowiednim arkuszu
+            if 'pow_lg' in locals():
+                pow_lg.to_excel(writer, index=False, sheet_name='pow_lg')
+
+        ####################################333333
         
         #TERAZ IMS
         ims = st.file_uploader(
