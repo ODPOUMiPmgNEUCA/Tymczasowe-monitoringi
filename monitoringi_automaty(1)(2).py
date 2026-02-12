@@ -1764,7 +1764,7 @@ if sekcja == 'Plastry':
             st.write(R4.head())
 
         if 'Rabat, ekspozytor' in xls.sheet_names:
-            R5 = pd.read_excel(df, sheet_name='Rabat, ekspozytor', skiprows=12, usecols=[1, 3, 9])
+            R5 = pd.read_excel(df, sheet_name='Rabat, ekspozytor', skiprows=12, usecols=[1, 3, 10])
             st.write("Dane z arkusza Rabat, ekspozytor:")
             st.write(R5.head())
 
