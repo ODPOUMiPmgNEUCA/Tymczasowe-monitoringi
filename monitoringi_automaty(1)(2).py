@@ -1577,8 +1577,8 @@ if sekcja == 'Alergia':
         Lr2 = Lr[Lr['SIECIOWY'] != 'SIECIOWY']
  
         ###### 1 to SIECIOWI, 2 to punkt dostaw
-        Lr1 = Lr1[['Klient','Kod SAP','max_percent']]
-        Lr2 = Lr2[['Kod SAP','max_percent']]
+        Lr1 = Lr1[['Klient','Kod SAP']]
+        Lr2 = Lr2[['Kod SAP']]
 
         #### p
 
@@ -1603,12 +1603,12 @@ if sekcja == 'Alergia':
         #wynik_df_lg = pd.merge(pow_lg, ims, left_on='Klient', right_on='Klient', how='left')
     
         # Wybór potrzebnych kolumn: 'APD_kod_SAP_apteki' i 'max_percent'
-        wynik_df_lr = wynik_df_lr[['Klient','APD_kod_SAP_apteki', 'max_percent']]
+        wynik_df_lr = wynik_df_lr[['Klient','APD_kod_SAP_apteki']]
         #wynik_df_lg = wynik_df_lg[['Klient','APD_kod_SAP_apteki', 'pakiet']]
     
         #to są kody SAP
         wynik_df1_lr = wynik_df_lr.rename(columns={'APD_kod_SAP_apteki': 'Kod SAP'})
-        wynik_df1_lr = wynik_df1_lr[['Kod SAP','max_percent']]
+        wynik_df1_lr = wynik_df1_lr[['Kod SAP']]
 
         #wynik_df1_lg = wynik_df_lg.rename(columns={'APD_kod_SAP_apteki': 'Kod SAP'})
         #wynik_df1_lg = wynik_df1_lg[['Kod SAP','pakiet']]
@@ -1617,7 +1617,7 @@ if sekcja == 'Alergia':
     
         #to są kody powiazan
         wynik_df2_lr = wynik_df_lr.rename(columns={'Klient': 'Kod SAP'})
-        wynik_df2_lr = wynik_df2_lr[['Kod SAP','max_percent']]
+        wynik_df2_lr = wynik_df2_lr[['Kod SAP']]
 
         #wynik_df2_lg = wynik_df_lg.rename(columns={'Klient': 'Kod SAP'})
         #wynik_df2_lg = wynik_df2_lg[['Kod SAP','pakiet']]
