@@ -1737,10 +1737,7 @@ if sekcja == 'Plastry':
     df = st.file_uploader(
     label = "Wrzuć plik - Plastry"
     )
-    if df:
-        df = pd.read_excel(df, sheet_name = 'Rabat', skiprows = 12, usecols = [1,3,9])
-        st.write(df.head())
-
+    
     if df:
         # Pobieramy listę dostępnych arkuszy
         xls = pd.ExcelFile(df)
