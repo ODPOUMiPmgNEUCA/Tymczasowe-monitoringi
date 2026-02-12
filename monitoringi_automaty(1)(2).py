@@ -1536,7 +1536,7 @@ if sekcja == 'Alergia':
 
 
         # Sprawdzamy, które arkusze są dostępne i wczytujemy odpowiednie dane
-        if 'Gratis CETOALLERGEDD' in xls.sheet_names:
+        if 'Gratis CETOALERGEDD' in xls.sheet_names:
             Lg = pd.read_excel(df, sheet_name='Gratis CETOALERGEDD', skiprows=14, usecols=[1, 3, 9])
             st.write("Dane z arkusza Gratis CETOALERGEDD:")
             st.write(Lg.head())
