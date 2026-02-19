@@ -1978,7 +1978,7 @@ if sekcja == 'Symetykon':
     ims = ims[ims['APD_Czy_istnieje_na_rynku']==1]
     ims = ims[ims['APD_Rodzaj_farmaceutyczny'].isin(['AP - Apteka','ME - Sklep zielarsko - medyczny','PU - Punkt apteczny'])]
 
-    wynik_df = pd.merge(powiazanie, ims, left_on='Klient, right_on='Klient', how='left')
+    wynik_df = pd.merge(powiazanie, ims, left_on='Klient', right_on='Klient', how='left')
 
     #Wybór potrzebnych kolumn: 'APD_kod_SAP_apteki' i 'max_percent'
     wynik_df = wynik_df[['Klient','APD_kod_SAP_apteki', 'max_percent']]
