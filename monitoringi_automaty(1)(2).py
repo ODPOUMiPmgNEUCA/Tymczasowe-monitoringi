@@ -1921,7 +1921,7 @@ if sekcja == 'Symetykon':
         label = "Wrzuć plik Cykl - Symetykon"
     )
     if df:
-        df = pd.read_excel(df, sheet_name = 'Rabat', skiprows = 11, usecols = [1,2,8])
+        df = pd.read_excel(df, sheet_name = 'Rabat', skiprows = 11, usecols = [1,3,8])
         st.write(df.head())
 
 
