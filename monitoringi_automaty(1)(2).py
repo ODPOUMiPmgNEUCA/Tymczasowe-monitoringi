@@ -2073,7 +2073,7 @@ if sekcja == 'Cera+':
         label = "Wrzuć plik Cykl - Cera+"
     )
     if df:
-        df = pd.read_excel(df, sheet_name = 'Rabat', skiprows = 14, usecols = [1,3,8])
+        df = pd.read_excel(df, sheet_name = 'Rabat', skiprows = 14, usecols = [1,3,9])
         st.write(df.head())
 
 
