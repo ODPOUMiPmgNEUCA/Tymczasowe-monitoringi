@@ -1918,7 +1918,7 @@ if sekcja == 'Symetykon':
     st.write(tabs_font_css, unsafe_allow_html=True)
 
     df = st.file_uploader(
-        label = "Wrzuć plik Cykl - Symetykon
+        label = "Wrzuć plik Cykl - Symetykon"
     )
     if df:
         df = pd.read_excel(df, sheet_name = 'Rabat', skiprows = 11, usecols = [1,2,8])
