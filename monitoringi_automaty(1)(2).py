@@ -1930,7 +1930,7 @@ if sekcja == 'Symetykon':
 
     # klient na całkowite
     df['Klient'] = df['Klient'].astype(int)
-    df['Kod SAP'] = df['Kod klienta'].astype(int)
+    df['Kod SAP'] = df['Kod SAP'].astype(int)
 
     # Zmiana nazw kolumn
     #df = df.rename(columns={'0.16.2': '16'})
