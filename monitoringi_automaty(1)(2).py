@@ -2382,7 +2382,7 @@ if sekcja == 'Panthenol':
 
                 nazwa_pliku1 = f"Panthenol_{dzisiejsza_data}.xlsx"
                 st.download_button(
-                    label='Pobierz Raport Porównawczy',
+                    label='Pobierz',
                     data=excel_file1,
                     file_name=nazwa_pliku1,
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
