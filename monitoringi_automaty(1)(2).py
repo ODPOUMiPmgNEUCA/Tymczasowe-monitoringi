@@ -2228,7 +2228,7 @@ if sekcja == 'Panthenol':
         label = "Wrzuć plik Cykl - Panthenol"
     )
     if df:
-        df = pd.read_excel(df, sheet_name = 'Rabat', skiprows = 18, usecols = [1,3,10])
+        df = pd.read_excel(df, sheet_name = 'Rabat', skiprows = 18, usecols = [1,3,6,10])
         st.write(df.head())
 
 
@@ -2257,6 +2257,27 @@ if sekcja == 'Panthenol':
     # Konwersja kolumn '12_percent' i '14_percent' na liczby zmiennoprzecinkowe
     df['Pakiet'] = df['Pakiet'].apply(percentage_to_float)
 
+
+    # Podział na 3 osobne tabele według podanych indeksów
+    df_105210 = df[df['Indeks'] == 105210]
+    df_105211 = df[df['Indeks'] == 105211]
+    df_105212 = df[df['Indeks'] == 105212]
+
+    # Wyświetlenie wyników w Streamlit
+    st.markdown("### Wyniki po podziale na indeksy:")
+
+    st.write("**Tabela dla indeksu 105210:**")
+    st.dataframe(df_105210)
+
+    st.write("**Tabela dla indeksu 105211:**")
+    st.dataframe(df_105211)
+
+    st.write("**Tabela dla indeksu 105212:**")
+    st.dataframe(df_105212)
+
+
+
+    
     # Dodaj nową kolumnę 'max_percent' z maksymalnymi wartościami z kolumn '12_percent' i '14_percent'
     df['max_percent'] = df[['Pakiet']].max(axis=1)
 
