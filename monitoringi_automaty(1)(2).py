@@ -2224,175 +2224,191 @@ if sekcja == 'Cera+':
 if sekcja == 'Panthenol':
     st.write(tabs_font_css, unsafe_allow_html=True)
 
-    df = st.file_uploader(
+    df_input = st.file_uploader(
         label = "Wrzuć plik Cykl - Panthenol"
     )
-    if df:
-        df = pd.read_excel(df, sheet_name = 'Rabat', skiprows = 18, usecols = [1,3,6,10])
+    if df_input:
+        df = pd.read_excel(df_input, sheet_name = 'Rabat', skiprows = 18, usecols = [1,3,6,10])
         st.write(df.head())
 
+        # usuń braki danych z Kod klienta
+        df = df.dropna(subset=['Kod SAP'])
 
-    #usuń braki danych z Kod klienta
-    df = df.dropna(subset=['Kod SAP'])
+        # klient na całkowite
+        df['Klient'] = df['Klient'].astype(int)
+        df['Kod SAP'] = df['Kod SAP'].astype(int)
 
-    # klient na całkowite
-    df['Klient'] = df['Klient'].astype(int)
-    df['Kod SAP'] = df['Kod SAP'].astype(int)
+        # Dodaj kolumnę 'SIECIOWY'
+        df['SIECIOWY'] = df.apply(lambda row: 'SIECIOWY' if 'powiązanie' in str(row['Pakiet']).lower() else '', axis=1)
+        
+        # Zastosowanie funkcji do kolumny 'Pakiet'
+        df['Pakiet'] = df['Pakiet'].apply(extract_percentage)
+        df['Pakiet'] = df['Pakiet'].apply(percentage_to_float)
 
-    # Zmiana nazw kolumn
-    #df = df.rename(columns={'0.16.2': '16'})
+        # Podział na 3 osobne tabele według podanych indeksów
+        df_105210 = df[df['Indeks'] == 105210].copy()
+        df_105211 = df[df['Indeks'] == 105211].copy()
+        df_105212 = df[df['Indeks'] == 105212].copy()
 
-    #Dodaj kolumnę 'SIECIOWY', która będzie zawierać 'SIECIOWY' jeśli w kolumnach '12' lub '14' jest słowo 'powiązanie'
-    df['SIECIOWY'] = df.apply(lambda row: 'SIECIOWY' if 'powiązanie' in str(row['Pakiet']).lower() else '', axis=1)
+        # Wyświetlenie wyników w Streamlit
+        st.markdown("### Wyniki po podziale na indeksy:")
+        st.write("**Tabela dla indeksu 105210:**")
+        st.dataframe(df_105210)
+        st.write("**Tabela dla indeksu 105211:**")
+        st.dataframe(df_105211)
+        st.write("**Tabela dla indeksu 105212:**")
+        st.dataframe(df_105212)
 
-    #SPRAWDZENIE CZY DZIAŁA
-    #df[df['SIECIOWY'] == 'SIECIOWY']
-    #DZIAŁA :)
+        # --- PRZETWARZANIE KAŻDEJ Z 3 TABEL (max_percent i filtrowanie) ---
+        
+        # 1. Indeks 105210
+        df_105210['max_percent'] = df_105210[['Pakiet']].max(axis=1)
+        filtered_105210 = df_105210[df_105210['max_percent'] != 0]
+        standard_105210 = filtered_105210[filtered_105210['SIECIOWY'] != 'SIECIOWY']
+        powiazanie_105210 = filtered_105210[filtered_105210['SIECIOWY'] == 'SIECIOWY']
+        standard_ost_105210 = standard_105210[['Kod SAP', 'max_percent']]
+        powiazanie_105210 = powiazanie_105210[['Klient','Kod SAP','max_percent']]
 
-    
-    # Zastosowanie funkcji do kolumn '12' i '14'
-    df['Pakiet'] = df['Pakiet'].apply(extract_percentage)
+        # 2. Indeks 105211
+        df_105211['max_percent'] = df_105211[['Pakiet']].max(axis=1)
+        filtered_105211 = df_105211[df_105211['max_percent'] != 0]
+        standard_105211 = filtered_105211[filtered_105211['SIECIOWY'] != 'SIECIOWY']
+        powiazanie_105211 = filtered_105211[filtered_105211['SIECIOWY'] == 'SIECIOWY']
+        standard_ost_105211 = standard_105211[['Kod SAP', 'max_percent']]
+        powiazanie_105211 = powiazanie_105211[['Klient','Kod SAP','max_percent']]
 
-
-    # Konwersja kolumn '12_percent' i '14_percent' na liczby zmiennoprzecinkowe
-    df['Pakiet'] = df['Pakiet'].apply(percentage_to_float)
-
-
-    # Podział na 3 osobne tabele według podanych indeksów
-    df_105210 = df[df['Indeks'] == 105210]
-    df_105211 = df[df['Indeks'] == 105211]
-    df_105212 = df[df['Indeks'] == 105212]
-
-    # Wyświetlenie wyników w Streamlit
-    st.markdown("### Wyniki po podziale na indeksy:")
-
-    st.write("**Tabela dla indeksu 105210:**")
-    st.dataframe(df_105210)
-
-    st.write("**Tabela dla indeksu 105211:**")
-    st.dataframe(df_105211)
-
-    st.write("**Tabela dla indeksu 105212:**")
-    st.dataframe(df_105212)
-
-
-
-    
-    # Dodaj nową kolumnę 'max_percent' z maksymalnymi wartościami z kolumn '12_percent' i '14_percent'
-    df['max_percent'] = df[['Pakiet']].max(axis=1)
-
-    # Wybierz wiersze, gdzie 'max_percent' nie jest równa 0
-    filtered_df = df[df['max_percent'] != 0]
-
-    standard = filtered_df[filtered_df['SIECIOWY'] != 'SIECIOWY']
-    powiazanie = filtered_df[filtered_df['SIECIOWY'] == 'SIECIOWY']
-
-    #len(standard), len(powiazanie), len(filtered_df)
-
-    standard_ost = standard[['Kod SAP', 'max_percent']]
-
-    powiazanie = powiazanie[['Klient','Kod SAP','max_percent']]
+        # 3. Indeks 105212
+        df_105212['max_percent'] = df_105212[['Pakiet']].max(axis=1)
+        filtered_105212 = df_105212[df_105212['max_percent'] != 0]
+        standard_105212 = filtered_105212[filtered_105212['SIECIOWY'] != 'SIECIOWY']
+        powiazanie_105212 = filtered_105212[filtered_105212['SIECIOWY'] == 'SIECIOWY']
+        standard_ost_105212 = standard_105212[['Kod SAP', 'max_percent']]
+        powiazanie_105212 = powiazanie_105212[['Klient','Kod SAP','max_percent']]
 
 
-    #TERAZ IMS
-    ims = st.file_uploader(
-        label = "Wrzuć plik ims_nhd"
-    )
+        # --- TERAZ IMS ---
+        ims_input = st.file_uploader(
+            label = "Wrzuć plik ims_nhd"
+        )
 
-    if ims:
-        ims = pd.read_excel(ims, usecols=[0,2,19,21])
-        st.write(ims.head())
+        if ims_input:
+            ims = pd.read_excel(ims_input, usecols=[0,2,19,21])
+            st.write(ims.head())
 
-    ims = ims[ims['APD_Czy_istnieje_na_rynku']==1]
-    ims = ims[ims['APD_Rodzaj_farmaceutyczny'].isin(['AP - Apteka','ME - Sklep zielarsko - medyczny','PU - Punkt apteczny'])]
+            ims = ims[ims['APD_Czy_istnieje_na_rynku']==1]
+            ims = ims[ims['APD_Rodzaj_farmaceutyczny'].isin(['AP - Apteka','ME - Sklep zielarsko - medyczny','PU - Punkt apteczny'])]
 
-    wynik_df = pd.merge(powiazanie, ims, left_on='Klient', right_on='Klient', how='left')
+            # --- ŁĄCZENIE Z IMS DLA KAŻDEGO INDEKSU OSOBNO ---
+            
+            # Indeks 105210
+            wynik_df_105210 = pd.merge(powiazanie_105210, ims, left_on='Klient', right_on='Klient', how='left')
+            wynik_df_105210 = wynik_df_105210[['Klient','APD_kod_SAP_apteki', 'max_percent']]
+            wynik_df1_105210 = wynik_df_105210.rename(columns={'APD_kod_SAP_apteki': 'Kod SAP'})[['Kod SAP','max_percent']]
+            wynik_df2_105210 = wynik_df_105210.rename(columns={'Klient': 'Kod SAP'})[['Kod SAP','max_percent']]
+            polaczone_105210 = pd.concat([standard_ost_105210, wynik_df1_105210, wynik_df2_105210], axis = 0)
+            ostatecznie_105210 = polaczone_105210.sort_values(by='max_percent', ascending=False).drop_duplicates(subset='Kod SAP')
 
-    #Wybór potrzebnych kolumn: 'APD_kod_SAP_apteki' i 'max_percent'
-    wynik_df = wynik_df[['Klient','APD_kod_SAP_apteki', 'max_percent']]
+            # Indeks 105211
+            wynik_df_105211 = pd.merge(powiazanie_105211, ims, left_on='Klient', right_on='Klient', how='left')
+            wynik_df_105211 = wynik_df_105211[['Klient','APD_kod_SAP_apteki', 'max_percent']]
+            wynik_df1_105211 = wynik_df_105211.rename(columns={'APD_kod_SAP_apteki': 'Kod SAP'})[['Kod SAP','max_percent']]
+            wynik_df2_105211 = wynik_df_105211.rename(columns={'Klient': 'Kod SAP'})[['Kod SAP','max_percent']]
+            polaczone_105211 = pd.concat([standard_ost_105211, wynik_df1_105211, wynik_df2_105211], axis = 0)
+            ostatecznie_105211 = polaczone_105211.sort_values(by='max_percent', ascending=False).drop_duplicates(subset='Kod SAP')
 
-
-    #to są kody SAP
-    wynik_df1 = wynik_df.rename(columns={'APD_kod_SAP_apteki': 'Kod SAP'})
-    wynik_df1 = wynik_df1[['Kod SAP','max_percent']]
-    #wynik_df1
-
-    #to są kody powiazan
-    wynik_df2 = wynik_df.rename(columns={'Klient': 'Kod SAP'})
-    wynik_df2 = wynik_df2[['Kod SAP','max_percent']]
-    #wynik_df2
-
-    #POŁĄCZYĆ wynik_df z standard_ost
-    polaczone = pd.concat([standard_ost, wynik_df1, wynik_df2], axis = 0)
-  
-    posortowane = polaczone.sort_values(by='max_percent', ascending=False)
-
-    ostatecznie = posortowane.drop_duplicates(subset='Kod SAP')
-
-
-    st.write('Jeśli to pierwszy monitoring, pobierz ten plik, jeśli nie, wrzuć plik z poprzedniego monitoringu i NIE POBIERAJ TEGO PLIKU')
-    excel_file = io.BytesIO()
-    with pd.ExcelWriter(excel_file, engine='xlsxwriter') as writer:
-        ostatecznie.to_excel(writer, index=False, sheet_name='Sheet1')
-    excel_file.seek(0)  # Resetowanie wskaźnika do początku pliku
-
-    # Umożliwienie pobrania pliku Excel
-    st.download_button(
-        label='Pobierz, jeśli to pierwszy monitoring',
-        data=excel_file,
-        file_name='czy_dodac.xlsx',
-        mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    )
-
-    #plik z poprzedniego monitoringu
-    poprzedni = st.file_uploader(
-        label = "Wrzuć plik z poprzedniego monitoringu"
-    )
-
-    if poprzedni:
-        poprzedni = pd.read_excel(poprzedni)
-        st.write(poprzedni.head())
-
-    poprzedni = poprzedni.rename(columns={'max_percent': 'old_percent'})
-    # Wykonanie left join, dodanie 'old_percent' do pliku 'ostatecznie'
-    result = ostatecznie.merge(poprzedni[['Kod SAP', 'old_percent']], on='Kod SAP', how='left')
-    result['old_percent'] = result['old_percent'].fillna(0)
-    result['Czy dodać'] = result.apply(lambda row: 'DODAJ' if row['max_percent'] > row['old_percent'] else '', axis=1)
-    st.write('Kliknij aby pobrać plik z kodami, które kody należy dodać')
-
-    excel_file1 = io.BytesIO()
-    with pd.ExcelWriter(excel_file1, engine='xlsxwriter') as writer:
-        result.to_excel(writer, index=False, sheet_name='Sheet1')
-    excel_file1.seek(0)  # Resetowanie wskaźnika do początku pliku
-
-    nazwa_pliku1 = f"Panthenol_{dzisiejsza_data}.xlsx"
-    #Umożliwienie pobrania pliku Excel
-    st.download_button(
-        label='Pobierz',
-        data=excel_file1,
-        file_name=nazwa_pliku1,
-        mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    )
-
-    result = result.drop(columns=['old_percent', 'Czy dodać'])
+            # Indeks 105212
+            wynik_df_105212 = pd.merge(powiazanie_105212, ims, left_on='Klient', right_on='Klient', how='left')
+            wynik_df_105212 = wynik_df_105212[['Klient','APD_kod_SAP_apteki', 'max_percent']]
+            wynik_df1_105212 = wynik_df_105212.rename(columns={'APD_kod_SAP_apteki': 'Kod SAP'})[['Kod SAP','max_percent']]
+            wynik_df2_105212 = wynik_df_105212.rename(columns={'Klient': 'Kod SAP'})[['Kod SAP','max_percent']]
+            polaczone_105212 = pd.concat([standard_ost_105212, wynik_df1_105212, wynik_df2_105212], axis = 0)
+            ostatecznie_105212 = polaczone_105212.sort_values(by='max_percent', ascending=False).drop_duplicates(subset='Kod SAP')
 
 
-    st.write('Kliknij, aby pobrać plik z formułą max do następnego monitoringu')
-    excel_file2 = io.BytesIO()
-    with pd.ExcelWriter(excel_file2, engine='xlsxwriter') as writer:
-        result.to_excel(writer, index=False, sheet_name='Sheet1')
-    excel_file1.seek(0)  # Resetowanie wskaźnika do początku pliku
+            # ZAPIS PIERWSZEGO MONITORINGU (3 arkusze w jednym pliku)
+            st.write('Jeśli to pierwszy monitoring, pobierz ten plik, jeśli nie, wrzuć plik z poprzedniego monitoringu i NIE POBIERAJ TEGO PLIKU')
+            excel_file = io.BytesIO()
+            with pd.ExcelWriter(excel_file, engine='xlsxwriter') as writer:
+                ostatecznie_105210.to_excel(writer, index=False, sheet_name='105210')
+                ostatecznie_105211.to_excel(writer, index=False, sheet_name='105211')
+                ostatecznie_105212.to_excel(writer, index=False, sheet_name='105212')
+            excel_file.seek(0)
 
-    nazwa_pliku = f"FM_Panthenol_{dzisiejsza_data}.xlsx"
-    # Umożliwienie pobrania pliku Excel
-    st.download_button(
-        label='Pobierz nowy plik FORMUŁA MAX',
-        data=excel_file2,
-        file_name = nazwa_pliku,
-        mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    )
-    
-    
+            st.download_button(
+                label='Pobierz, jeśli to pierwszy monitoring',
+                data=excel_file,
+                file_name='czy_dodac_all_indeks.xlsx',
+                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+
+
+            # --- PLIK Z POPRZEDNIEGO MONITORINGU ---
+            poprzedni_input = st.file_uploader(
+                label = "Wrzuć plik z poprzedniego monitoringu"
+            )
+
+            if poprzedni_input:
+                # Wczytujemy wszystkie arkusze z poprzedniego pliku
+                poprzedni_sheets = pd.read_excel(poprzedni_input, sheet_name=None)
+                
+                # Pobieramy dane dla odpowiednich arkuszy (lub domyślny pierwszy arkusz, jeśli nie ma podziału)
+                poprzedni_105210 = poprzedni_sheets.get('105210', list(poprzedni_sheets.values())[0]).rename(columns={'max_percent': 'old_percent'})
+                poprzedni_105211 = poprzedni_sheets.get('105211', list(poprzedni_sheets.values())[0]).rename(columns={'max_percent': 'old_percent'})
+                poprzedni_105212 = wastes = poprzedni_sheets.get('105212', list(poprzedni_sheets.values())[0]).rename(columns={'max_percent': 'old_percent'})
+
+                # Porównanie dla 105210
+                res_105210 = ostatecznie_105210.merge(poprzedni_105210[['Kod SAP', 'old_percent']], on='Kod SAP', how='left')
+                res_105210['old_percent'] = res_105210['old_percent'].fillna(0)
+                res_105210['Czy dodać'] = res_105210.apply(lambda row: 'DODAJ' if row['max_percent'] > row['old_percent'] else '', axis=1)
+
+                # Porównanie dla 105211
+                res_105211 = ostatecznie_105211.merge(poprzedni_105211[['Kod SAP', 'old_percent']], on='Kod SAP', how='left')
+                res_105211['old_percent'] = res_105211['old_percent'].fillna(0)
+                res_105211['Czy dodać'] = res_105211.apply(lambda row: 'DODAJ' if row['max_percent'] > row['old_percent'] else '', axis=1)
+
+                # Porównanie dla 105212
+                res_105212 = ostatecznie_105212.merge(poprzedni_105212[['Kod SAP', 'old_percent']], on='Kod SAP', how='left')
+                res_105212['old_percent'] = res_105212['old_percent'].fillna(0)
+                res_105212['Czy dodać'] = res_105212.apply(lambda row: 'DODAJ' if row['max_percent'] > row['old_percent'] else '', axis=1)
+
+                # GENEROWANIE PLIKU "CZY DODAĆ" Z TRZEMA ARKUSZAMI
+                st.write('Kliknij aby pobrać plik z kodami, które kody należy dodać')
+                excel_file1 = io.BytesIO()
+                with pd.ExcelWriter(excel_file1, engine='xlsxwriter') as writer:
+                    res_105210.to_excel(writer, index=False, sheet_name='105210')
+                    res_105211.to_excel(writer, index=False, sheet_name='105211')
+                    res_105212.to_excel(writer, index=False, sheet_name='105212')
+                excel_file1.seek(0)
+
+                nazwa_pliku1 = f"Panthenol_{dzisiejsza_data}.xlsx"
+                st.download_button(
+                    label='Pobierz Raport Porównawczy',
+                    data=excel_file1,
+                    file_name=nazwa_pliku1,
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+
+                # CZYSZCZENIE DO FORMUŁY MAX
+                res_105210_fm = res_105210.drop(columns=['old_percent', 'Czy dodać'])
+                res_105211_fm = res_105211.drop(columns=['old_percent', 'Czy dodać'])
+                res_105212_fm = res_105212.drop(columns=['old_percent', 'Czy dodać'])
+
+                # GENEROWANIE NOWEGO PLIKU "FORMUŁA MAX" Z TRZEMA ARKUSZAMI
+                st.write('Kliknij, aby pobrać plik z formułą max do następnego monitoringu')
+                excel_file2 = io.BytesIO()
+                with pd.ExcelWriter(excel_file2, engine='xlsxwriter') as writer:
+                    res_105210_fm.to_excel(writer, index=False, sheet_name='105210')
+                    res_105211_fm.to_excel(writer, index=False, sheet_name='105211')
+                    res_105212_fm.to_excel(writer, index=False, sheet_name='105212')
+                excel_file2.seek(0)
+
+                nazwa_pliku = f"FM_Panthenol_{dzisiejsza_data}.xlsx"
+                st.download_button(
+                    label='Pobierz nowy plik FORMUŁA MAX',
+                    data=excel_file2,
+                    file_name = nazwa_pliku,
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
    
 
 
