@@ -2337,7 +2337,7 @@ if sekcja == 'Panthenol':
             st.download_button(
                 label='Pobierz, jeśli to pierwszy monitoring',
                 data=excel_file,
-                file_name='czy_dodac_all_indeks.xlsx',
+                file_name='czy_dodac.xlsx',
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
 
